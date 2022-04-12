@@ -4,6 +4,8 @@ import { Picker_Picture, Post, PostContent, User } from '../api/types'
 import Field from '../private/Field'
 import ImageGalleryPicker from './ImageGalleryPicker'
 import { getPost } from '../api/post'
+import { getAllUser, getUser } from '../api/user'
+
 
 
 type FormEvent =
@@ -83,6 +85,19 @@ const EditPost = () => {
         convertToFormData(data)
     }
 
+    async function _getUsers() {
+        const data = await getAllUser();
+        setUsers(data);
+        // console.log('data', data)
+        //convertToFormData(data);
+    }
+
+    useEffect(() => {
+        // chaque fois que l'id change
+        _getUsers();
+    }, []);
+
+
     useEffect(() => {
         // chaque fois que l'id change
         _getPost(Number(id));
@@ -105,10 +120,10 @@ const EditPost = () => {
     function getSelectedAuthor() {
         // prevent bad request and use a placeholder if no data
         if (formData.userId) {
-            // [WORK]
-            // You need to find the author name with the server
-            return '[TO DO]'
-        } else {
+            const selectedUser = users.find((user) => user.id === formData.userId)
+            if (selectedUser) {
+                return selectedUser.name;
+            }
             return 'Unknown author'
         }
     }
